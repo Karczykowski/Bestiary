@@ -6,3 +6,6 @@ class TestRegion(unittest.TestCase):
         self.valid_region = Region(
             name = "Swamp",
         )
+
+    def test_region_initialization(self):
+        self.assertEqual(self.valid_region.name, "Swamp")

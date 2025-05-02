@@ -43,3 +43,10 @@ class TestMonster(unittest.TestCase):
             monster_type = MonsterType.DRAGON,
             abilities = [self.ability2, self.ability3]
         )
+
+    def test_monster_initialization(self):
+        self.assertEqual(self.monster1.name, "Zombie")
+        self.assertEqual(self.monster1.hit_points, 20)
+        self.assertEqual(self.monster1.region, self.region2)
+        self.assertEqual(self.monster1.monster_type, MonsterType.HUMANOID)
+        self.assertEqual(self.monster1.abilities, [self.ability2])

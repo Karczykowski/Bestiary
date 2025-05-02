@@ -1,3 +1,5 @@
+import json
+import os
 from enum import Enum, auto
 
 class MonsterType(Enum):
@@ -9,6 +11,7 @@ class MonsterType(Enum):
     OTHER = auto()
 
 class Monster:
+
     def __init__(self, name, hit_points, region, monster_type = MonsterType.OTHER, abilities = None):
         self.name = name
         self.hit_points = hit_points
@@ -17,3 +20,32 @@ class Monster:
 
         if abilities is not None:
             self.abilities = abilities
+
+    def to_json(self):
+
+        data = {
+            "name": self.name,
+            "hit_points": self.hit_points,
+            "region": self.region,
+            "monster_type": self.monster_type,
+            "abilities": self.abilities
+        }
+
+        return json.dumps(data, ensure_ascii=False)
+
+    @classmethod
+    def from_json(cls, json_str):
+
+        data = json.loads(json_str)
+        monster_type = MonsterType[data["monster_type"]]
+
+        monster = cls(
+            data["name"],
+            data["hit_points"],
+            data["region"],
+            monster_type,
+            data["abilities"]
+
+        )
+
+        return monster

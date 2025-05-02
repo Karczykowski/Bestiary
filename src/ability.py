@@ -6,6 +6,12 @@ class Ability:
         self.name = name
         self.damage = damage
 
+    def to_dict(self):
+        return {
+            "name": self.name,
+            "damage": self.damage
+        }
+
     def to_json(self):
 
         data = {

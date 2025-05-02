@@ -1,5 +1,4 @@
 import json
-import os
 from enum import Enum, auto
 
 class MonsterType(Enum):
@@ -26,9 +25,9 @@ class Monster:
         data = {
             "name": self.name,
             "hit_points": self.hit_points,
-            "region": self.region,
-            "monster_type": self.monster_type,
-            "abilities": self.abilities
+            "region": self.region.to_dict(),
+            "monster_type": self.monster_type.name,
+            "abilities": [ability.to_dict() for ability in self.abilities]
         }
 
         return json.dumps(data, ensure_ascii=False)

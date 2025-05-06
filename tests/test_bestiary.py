@@ -1,3 +1,5 @@
+import os.path
+import tempfile
 import unittest
 from src.bestiary import Bestiary
 from src.monster import Monster, MonsterType
@@ -88,6 +90,45 @@ class TestBestiary(unittest.TestCase):
         fake_monster = self.bestiary.get_monster_by_name("fake-monster-name")
         self.assertIsNone(fake_monster)
 
-    def test_get_monsters_by_abilities(self):
+
+    def test_get_monsters_by_ability(self):
+        self.bestiary.add_monster(self.monster1)
+        self.bestiary.add_monster(self.monster2)
+
+        monsters_with_bite = self.bestiary.get_monsters_by_ability("Bite")
+        self.assertEqual(len(monsters_with_bite), 2)
+
+        monster_with_fake_ability = self.bestiary.get_monsters_by_ability("fake-ability")
+        self.assertEqual(len(monster_with_fake_ability), 0)
+
+
 
     def test_get_monsters_by_region(self):
+        self.bestiary.add_monster(self.monster2)
+
+        monster_from_swamp = self.bestiary.get_monsters_by_region("Swamp")
+        self.assertEqual(len(monster_from_swamp), 1)
+
+        monster_from_fake_region = self.bestiary.get_monsters_by_region("fake-region")
+        self.assertEqual(len(monster_from_fake_region), 0)
+
+    def test_save_and_load_from_file(self):
+        self.bestiary.add_monster(self.monster1)
+        self.bestiary.add_monster(self.monster2)
+
+        with tempfile.NamedTemporaryFile(delete=False) as temp_file:
+            temp_filename = temp_file.name
+
+        try:
+            self.bestiary.save_to_file(temp_filename)
+
+            import json
+            with open(temp_filename, 'r', encoding='utf-8') as f:
+                data = json.load(f)
+
+            self.assertEqual(data["name"], "Monster Book")
+            self.assertEqual(len(data["monsters"]), 2)
+
+        finally:
+            if os.path.exists(temp_filename):
+                os.remove(temp_filename)

@@ -1,4 +1,5 @@
 import json
+import os
 
 class Bestiary:
 
@@ -25,8 +26,47 @@ class Bestiary:
     def get_monsters_by_ability(self, ability):
         return [
             monster for monster in self.monsters.values()
-            if any(a.lower() == ability.lower() for a in monster.abilities)
+            if any(a.name == ability for a in monster.abilities)
         ]
 
     def get_monsters_by_region(self, region):
-        return [monster for monster in self.monsters.values() if region.name.lower() in monster.region.name.lower()]
+        return [monster for monster in self.monsters.values() if region in monster.region.name]
+
+    def save_to_file(self, filename):
+        data = {
+            "name": self.name,
+            "monsters": {name: json.loads(monster.to_json()) for name, monster in self.monsters.items()}
+        }
+
+        with open(filename, 'w', encoding='utf-8') as f:
+            json.dump(data, f, ensure_ascii=False, indent=2)
+
+        return True
+
+    @classmethod
+    def load_from_file(cls, filename):
+        if not os.path.exists(filename):
+            raise FileNotFoundError(f"File {filename} not found")
+
+        with open (filename, 'r', encoding='utf-8') as f:
+            data = json.load(f)
+
+        from monster import Monster, MonsterType
+        from region import Region
+
+        bestiary = cls(data["name"])
+
+        for name, monster_data in data["monsters"].items():
+
+            monster_data["monster_type"] = MonsterType[monster_data["monster_type"]]
+
+            monster = Monster(
+                monster_data["name"],
+                monster_data["hit_points"],
+                monster_data["region"],
+                monster_data["monster_type"],
+                monster_data["abilities"]
+            )
+            bestiary.monsters[name] = monster
+
+        return bestiary
